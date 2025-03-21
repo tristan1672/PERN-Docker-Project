@@ -2,14 +2,31 @@ import fs from "fs";
 import csvParser from "csv-parser";
 import pool from "../../db";
 
+type ProgressCallback = (processedBytes: number) => void;
+
 //csv processing function
-export const processCSV = async (filePath: string) => {
+export const processCSV = async (filePath: string, progressCallback?: ProgressCallback) => {
   const data: { post_id: number; id : number; name: string; email: string; body: string }[] = []; //data buffer
 
+  let processedBytes = 0;
+
   return new Promise<void>((resolve, reject) => {
+    // Get file size for progress calculation
+    const fileSize = fs.statSync(filePath).size;
+    
+    // Create read stream
+    const stream = fs.createReadStream(filePath);
+    
+    // Track progress on data chunks
+    stream.on('data', (chunk) => {
+      processedBytes += chunk.length;
+      if (progressCallback) {
+        progressCallback(processedBytes);
+      }
+    });
 
     //Read stream pipe into csv-parser
-    fs.createReadStream(filePath)
+    stream
       .pipe(csvParser())
       .on("data", (row) => {
         if (row.id && row.post_id && row.name && row.email && row.body) { //data format check
@@ -39,6 +56,11 @@ export const processCSV = async (filePath: string) => {
             `;
               
             await pool.query(query);
+          }
+
+          // Ensure 100% progress is reported at the end
+          if (progressCallback) {
+            progressCallback(fileSize);
           }
 
           resolve();
