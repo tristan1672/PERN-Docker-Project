@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from "express";
 import dotenv from "dotenv";
 import searchRoutes from "./search/searchRoutes";
@@ -7,6 +8,7 @@ import dataRoutes from "./data/dataRoutes";
 dotenv.config(); // Load environment variables
 
 const app = express();
+app.use(cors()); // CORS is enabled here
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json()); // Enable JSON body parsing
