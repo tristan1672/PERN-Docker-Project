@@ -1,6 +1,6 @@
 import fs from "fs";
 import csvParser from "csv-parser";
-import pool from "../../db";
+import pool from "../db";
 
 type ProgressCallback = (processedBytes: number) => void;
 

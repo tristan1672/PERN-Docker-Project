@@ -1,4 +1,4 @@
-import pool from "../../db";
+import pool from "../db";
 
 //pagination formatting function
 export const getPaginatedData = async (page: number, limit: number) => {

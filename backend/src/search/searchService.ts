@@ -1,4 +1,4 @@
-import pool from "../../db";
+import pool from "../db";
 
 //search function 
 export const performSearch = async (query: string) => {

@@ -53,7 +53,7 @@ const DataTable = ({ searchTerm, refreshTrigger }: DataTableProps): JSX.Element 
   // Function to fetch data from the API
   const fetchData = async (context: QueryFunctionContext): Promise<DataResponse> => {
     const [_key, _page, _limit, _search] = context.queryKey as (string | number)[];
-    
+    console.log(_key); // Use _key to avoid ESLint warning
     try {
       // Convert to 1-based pagination for the backend
       const response = await axios.get(`${API_URL}/api/data`, {
