@@ -1,74 +1,94 @@
-import { JSX, useState, ChangeEvent, FormEvent } from 'react';
-import { 
-  Paper, 
-  InputBase, 
-  IconButton, 
-  Divider,
-  Box
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
+import { useState, useEffect } from 'react';
+
+// Styles
+const styles = {
+  container: {
+    width: '100%',
+    marginBottom: '16px',
+  },
+  inputContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    position: 'relative' as const,
+    width: '100%',
+  },
+  input: {
+    width: '100%',
+    padding: '10px 12px',
+    fontSize: '16px',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    backgroundColor: '#fff',
+    transition: 'border-color 0.3s ease',
+    outline: 'none',
+  },
+  inputFocused: {
+    borderColor: '#1976d2',
+    boxShadow: '0 0 0 2px rgba(25, 118, 210, 0.2)',
+  },
+  searchIcon: {
+    position: 'absolute' as const,
+    right: '12px',
+    color: '#757575',
+    width: '18px',
+    height: '18px',
+  }
+};
+
+// Search icon as SVG
+const SearchIcon = () => (
+  <svg 
+    style={styles.searchIcon} 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  >
+    <circle cx="11" cy="11" r="8"></circle>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+);
 
 interface SearchBarProps {
   onSearch: (value: string) => void;
 }
 
-const SearchBar = ({ onSearch }: SearchBarProps): JSX.Element => {
+const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    const value = event.target.value;
-    setSearchTerm(value);
-    onSearch(value);
-  };
+  // Handle input change with debouncing
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      onSearch(searchTerm);
+    }, 300);
 
-  const handleClear = (): void => {
-    setSearchTerm('');
-    onSearch('');
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    onSearch(searchTerm);
-  };
+    return () => {
+      clearTimeout(debounceTimeout);
+    };
+  }, [searchTerm, onSearch]);
 
   return (
-    <Paper
-      component="form"
-      sx={{ 
-        p: '2px 4px', 
-        display: 'flex', 
-        alignItems: 'center', 
-        width: '100%',
-        maxWidth: 500,
-        mx: 'auto'
-      }}
-      elevation={2}
-      onSubmit={handleSubmit}
-    >
-      <Box sx={{ p: '10px' }}>
-        <SearchIcon color="action" />
-      </Box>
-      <InputBase
-        sx={{ ml: 1, flex: 1 }}
-        placeholder="Search by name, email or content..."
-        value={searchTerm}
-        onChange={handleChange}
-        inputProps={{ 'aria-label': 'search data' }}
-      />
-      {searchTerm && (
-        <>
-          <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-          <IconButton 
-            sx={{ p: '10px' }} 
-            aria-label="clear search" 
-            onClick={handleClear}
-          >
-            <ClearIcon />
-          </IconButton>
-        </>
-      )}
-    </Paper>
+    <div style={styles.container}>
+      <div style={styles.inputContainer}>
+        <input
+          type="text"
+          placeholder="Search data..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          style={{
+            ...styles.input,
+            ...(isFocused ? styles.inputFocused : {})
+          }}
+        />
+        <SearchIcon />
+      </div>
+    </div>
   );
 };
 

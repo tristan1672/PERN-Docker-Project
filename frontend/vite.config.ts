@@ -9,10 +9,18 @@ export default defineConfig({
     port: 3000,
     // Proxy API requests to backend during development
     proxy: {
-      '/api': {
+      '/data': {
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
+      '/search': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      '/upload': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      }
     },
   },
 });
