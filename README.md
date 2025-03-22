@@ -15,3 +15,18 @@ Express + Node
 
 Frontend:
 React
+
+Prerequisites
+-Node.js
+-npm or yarn
+-PostgreSQL
+-Docker
+
+How to Run:
+- clone this repository
+- npm install or yarn install in the source directory
+- npm run build in folders /backend and /frontend
+- Run Docker desktop
+- in the source directory /pern, run docker compose up --build 
+- Once containers are built enter: http://localhost:3000/ in browser
+
