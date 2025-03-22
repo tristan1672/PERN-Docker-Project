@@ -2,22 +2,17 @@ import fs from "fs";
 import csvParser from "csv-parser";
 import pool from "../db";
 
+interface CsvRow {
+  [key: string]: string; // All keys are strings, and their values are also strings
+}
+
 type ProgressCallback = (processedBytes: number) => void;
 
-//csv processing function
 export const processCSV = async (filePath: string, progressCallback?: ProgressCallback) => {
-  const data: { post_id: number; id : number; name: string; email: string; body: string }[] = []; //data buffer
-
   let processedBytes = 0;
-
   return new Promise<void>((resolve, reject) => {
-    // Get file size for progress calculation
-    const fileSize = fs.statSync(filePath).size;
-    
-    // Create read stream
     const stream = fs.createReadStream(filePath);
-    
-    // Track progress on data chunks
+
     stream.on('data', (chunk) => {
       processedBytes += chunk.length;
       if (progressCallback) {
@@ -25,50 +20,46 @@ export const processCSV = async (filePath: string, progressCallback?: ProgressCa
       }
     });
 
-    //Read stream pipe into csv-parser
     stream
       .pipe(csvParser())
-      .on("data", (row) => {
-        if (row.id && row.post_id && row.name && row.email && row.body) { //data format check
-          data.push({          
-            post_id: parseInt(row.post_id),   
-            id: parseInt(row.id), 
-            name: row.name,
-            email: row.email,
-            body: row.body,
-          });
+      .on("data", async (row: CsvRow) => {
+        console.log("Processing row:", row);
+
+        try {
+          // Normalize field names by removing quotes and trimming whitespace
+          const normalizedRow = Object.fromEntries(
+            Object.entries(row).map(([key, value]) => [
+              key.replace(/"/g, "").trim(), // Remove quotes and trim key
+              String(value).trim() // Ensure value is treated as a string and trim it
+            ])
+          );
+
+          console.log("Normalized row:", normalizedRow);
+
+          // Insert the row into the database
+          const query = `
+            INSERT INTO uploaded_data (post_id, id, name, email, body, created_at)
+            VALUES ($1, $2, $3, $4, $5, NOW());
+          `;
+          await pool.query(query, [
+            normalizedRow.postId || '', // Treat as string
+            normalizedRow.id || '',     // Treat as string
+            normalizedRow.name || '',
+            normalizedRow.email || '',
+            normalizedRow.body || '',
+          ]);
+
+          console.log(`Row with id=${normalizedRow.id} successfully inserted into the database.`);
+        } catch (error) {
+          console.error(`Error inserting row with id=${row.id}:`, error);
         }
       })
-      .on("end", async () => {
-        try {
-          if (data.length > 0) {
-            //Insert as map
-            const values = data
-              .map(({ id, post_id, name, email, body }) => 
-                `(${id}, ${post_id}, '${name}', '${email}', '${body.replace(/'/g, "''")}', NOW())`
-              )
-              .join(",");
-            //inserting into db
-            const query = `
-              INSERT INTO uploaded_data (id, post_id, name, email, body, created_at)
-              VALUES ${values}
-              ON CONFLICT (id) DO NOTHING; -- Prevent duplicate IDs
-            `;
-              
-            await pool.query(query);
-          }
-
-          // Ensure 100% progress is reported at the end
-          if (progressCallback) {
-            progressCallback(fileSize);
-          }
-
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
+      .on("end", () => {
+        console.log("CSV processing completed.");
+        resolve();
       })
       .on("error", (error) => {
+        console.error("CSV parsing error:", error);
         reject(error);
       });
   });

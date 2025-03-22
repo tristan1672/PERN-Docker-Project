@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { useDataQuery } from './hooks/useDataQuery';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import FileUploader from './components/FileUploader';
 import DataTable from './components/DataTable';
 import SearchBar from './components/SearchBar';
 import Pagination from './components/Pagination';
-import FileUploader from './components/FileUploader';
+import { useDataQuery } from './hooks/useDataQuery';
 
 const App: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -21,11 +21,6 @@ const App: React.FC = () => {
       <div>
         <h1>CSV File Upload and Data Table</h1>
 
-        {/* Navigation Links */}
-        <nav>
-          <Link to="/">Data Table</Link> | <Link to="/upload">Upload CSV</Link>
-        </nav>
-
         {/* Routes */}
         <Routes>
           {/* Route for displaying the data table */}
@@ -33,6 +28,7 @@ const App: React.FC = () => {
             path="/"
             element={
               <>
+                <FileUploader />
                 <SearchBar onSearch={handleSearch} />
                 <DataTable data={data?.results || []} isLoading={isLoading} />
                 <Pagination
