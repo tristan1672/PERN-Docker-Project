@@ -1,15 +1,43 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { UploadedData } from '../types/types';
 
 interface SearchBarProps {
-  onSearch: (term: string) => void;
+  onSearchResults: (results:UploadedData[]) => void; // Callback to pass search results to the parent
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearchResults }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(searchTerm);
+    if (!searchTerm.trim()) {
+      setError('Please enter a valid search term.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Send the search term as a query parameter
+      const response = await axios.get(`http://localhost:5000/search`, {
+        params: {
+          query: searchTerm,
+        },
+      });
+
+      // Pass the search results to the parent component
+      onSearchResults(response.data.results || []);
+    } catch {
+      console.error('Error fetching search results:');
+      setError('An error occurred while searching.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -20,7 +48,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <button type="submit">Search</button>
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? 'Searching...' : 'Search'}
+      </button>
+
+      {/* Display error message if any */}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 };
