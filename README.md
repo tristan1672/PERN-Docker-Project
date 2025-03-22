@@ -24,7 +24,7 @@ Prerequisites
 
 How to Run:
 - clone this repository
-- npm install or yarn install in the source directory
+- npm install or yarn install in /backend and /frontend directories
 - npm run build in folders /backend and /frontend
 - Run Docker desktop
 - in the source directory /pern, run docker compose up --build 
