@@ -1,9 +1,14 @@
-import cors from 'cors';
+import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
 import searchRoutes from "./search/searchRoutes";
 import uploadRoutes from "./upload/uploadRoutes";
 import dataRoutes from "./data/dataRoutes";
+
+import { rabbitMQProvider } from "./messaging/rabbitmq.provider";
+import { registerConsumer } from "./messaging/consumer";
+import { EventRouter } from "./messaging/eventrouter";
+import { TopicObject } from "./messaging/consumer";
 
 dotenv.config(); // Load environment variables
 
@@ -26,4 +31,51 @@ app.use("/data", dataRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  bootstrapMessaging().catch((err) => {
+    console.error(" Failed to start RabbitMQ messaging:", err);
+  });
 });
+
+async function bootstrapMessaging() {
+  await rabbitMQProvider.init();
+  const channel = rabbitMQProvider.getChannel(); // e.g. returns channel
+  const exchange = "scene.events"; // Example exchange
+
+  const topics: TopicObject[] = [
+    // {
+    //   domain: "scene",
+    //   category: "color",
+    //   action: "updated",
+    //   type: "*",
+    //   color: "*",
+    // },
+    // {
+    //   domain: "scene",
+    //   category: "shape",
+    //   action: "updated",
+    //   type: "*",
+    //   color: "*",
+    // },
+    // {
+    //   domain: "scene",
+    //   category: "shape",
+    //   action: "updated",
+    //   type: "cube",
+    //   color: "FFFF00",
+    // }, // specific example
+    {
+      domain: "scene",
+      category: "color",
+      action: "updated",
+      type: "*",
+      color: "*",
+    },
+  ];
+
+  for (const topic of topics) {
+    await registerConsumer(channel, exchange, topic, (msg, topic) => {
+      const payload = msg.content.toString();
+      EventRouter.handle(topic, payload);
+    });
+  }
+}
