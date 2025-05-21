@@ -29,7 +29,7 @@ export async function registerConsumer(
     (msg) => {
       if (msg) {
         const topicObject = deconstructRoutingKey(msg.fields.routingKey);
-        onMessage(msg, topicObject); // ✅ pass the raw message object
+        onMessage(msg, topicObject);
       }
     },
     { noAck: true }
