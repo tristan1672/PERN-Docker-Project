@@ -26,5 +26,3 @@ export class EventRouter {
 //scene.color.updated.*.*
 
 //scene.shape.updated.cube.FFFF00
-
-//send data as SSE to sveltekit frontend

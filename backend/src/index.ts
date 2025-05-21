@@ -10,10 +10,6 @@ import { registerConsumer } from "./messaging/consumer";
 import { EventRouter } from "./messaging/eventrouter";
 import { TopicObject } from "./messaging/consumer";
 
-import registerRoute from "./messaging/routes/register";
-import eventsRoute from "./messaging/routes/events";
-import { initConsumerManager } from "./messaging/consumerManager";
-
 dotenv.config(); // Load environment variables
 
 const app = express();
@@ -27,9 +23,6 @@ app.get("/", (req, res) => {
   console.log(req.method);
   res.send("Backend is running");
 });
-
-app.use(registerRoute);
-app.use(eventsRoute);
 
 // Define routes
 app.use("/search", searchRoutes);
@@ -47,8 +40,6 @@ async function bootstrapMessaging() {
   await rabbitMQProvider.init();
   const channel = rabbitMQProvider.getChannel(); // e.g. returns channel
   const exchange = "scene.events"; // Example exchange
-
-  initConsumerManager(channel, exchange); //initializing singleton consumerManager
 
   const topics: TopicObject[] = [
     // {
