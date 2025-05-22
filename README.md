@@ -56,5 +56,6 @@ How to Run:
 - clone sveltekit-starter and run locally, ensure .env file backend_url=http://<your public address>:5000 as this current project is ran on docker
 
 
-Diagram
+
+**Diagram**
 ![image](https://github.com/user-attachments/assets/52519737-529b-437e-a032-d8a0bda3b943)
