@@ -9,7 +9,9 @@ failsafe functions and overall durability.
 
 Inter-project communication POC
 frontend edge device: https://github.com/tristan1672/sveltekit-starter - running locally
+
 backend conduit server: https://github.com/tristan1672/PERN-Docker-Project/tree/rabbitMQ-to-threeJS_project
+
 event input interface: https://github.com/tristan1672/threejs_starter/tree/simple_backend_example
 
 Description:
