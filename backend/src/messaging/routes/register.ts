@@ -6,11 +6,13 @@ import { TopicObject } from "../../messaging/consumer";
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
-  console.log("Received payload:", req.body);
+  console.log("[Register] Received registration request:", req.body);
   const { name, view, eventType } = req.body;
 
   if (!name || !view || !eventType) {
-    return res.status(400).json({ error: "Missing required fields" });
+    return res
+      .status(400)
+      .json({ error: "[Register] Missing required fields" });
   }
 
   // Construct topic based on eventType and values
@@ -26,14 +28,6 @@ router.post("/register", async (req, res) => {
     color,
   };
 
-  console.log(
-    topicObject.domain,
-    topicObject.category,
-    topicObject.action,
-    topicObject.type,
-    topicObject.color
-  );
-
   try {
     clientManager.registerClient(name, topic, view);
     console.log(`[Register] Device '${name}' registered for topic '${topic}'`);
@@ -41,12 +35,12 @@ router.post("/register", async (req, res) => {
     await getConsumerManager().ensureConsumer(topicObject, name);
 
     res.status(200).json({
-      message: "Device registered successfully",
+      message: "[Register] Device registered successfully",
       id: name,
       topic,
     });
   } catch (err) {
-    console.error("Failed to register client:", err);
+    console.error("[Register] Failed to register client:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });

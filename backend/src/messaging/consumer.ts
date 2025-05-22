@@ -17,15 +17,23 @@ export async function registerConsumer(
   channel: Channel,
   exchange: string,
   topic: TopicObject,
+  name: string,
   onMessage: (msg: any, topic: TopicObject) => void
 ) {
   const routingKey = buildRoutingKey(topic);
-  console.log("listening for $", routingKey);
-  const { queue } = await channel.assertQueue("", { exclusive: true });
-  await channel.bindQueue(queue, exchange, routingKey);
+  const queueName = name; //device name as queue
 
+  await channel.assertQueue(queueName, {
+    durable: false, // messages not persisted across restarts (you can change this)
+    autoDelete: false, // don't auto-delete when no consumer (or set true for short-lived devices)
+  });
+
+  // Bind the routing key to the named device queue
+  await channel.bindQueue(queueName, exchange, routingKey);
+
+  // Start consuming messages from the queue
   channel.consume(
-    queue,
+    queueName,
     (msg) => {
       if (msg) {
         const topicObject = deconstructRoutingKey(msg.fields.routingKey);
@@ -35,14 +43,21 @@ export async function registerConsumer(
     { noAck: true }
   );
 
-  console.log(`Consumer bound to ${exchange} with ${routingKey}`);
+  console.log(
+    `[Consumer] '${queueName}' bound to '${exchange}' with routing key '${routingKey}'`
+  );
 }
 
 function buildRoutingKey(topic: TopicObject): string {
   // If you want optional color, fallback to `*` or empty
   const type = topic.type || "*";
   const color = topic.color || "*";
-  return `${topic.domain}.${topic.category}.${topic.action}.${type}.${color}`;
+
+  if (type == "*" && color == "*") {
+    return `${topic.domain}.${topic.category}.${topic.action}.#`;
+  } else {
+    return `${topic.domain}.${topic.category}.${topic.action}.${type}.${color}`;
+  }
 }
 
 function deconstructRoutingKey(routingKey: string): TopicObject {

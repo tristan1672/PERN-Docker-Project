@@ -6,9 +6,9 @@ import uploadRoutes from "./upload/uploadRoutes";
 import dataRoutes from "./data/dataRoutes";
 
 import { rabbitMQProvider } from "./messaging/rabbitmq.provider";
-import { registerConsumer } from "./messaging/consumer";
-import { EventRouter } from "./messaging/eventrouter";
-import { TopicObject } from "./messaging/consumer";
+// import { registerConsumer } from "./messaging/consumer";
+// import { EventRouter } from "./messaging/eventrouter";
+// import { TopicObject } from "./messaging/consumer";
 
 import registerRoute from "./messaging/routes/register";
 import eventsRoute from "./messaging/routes/events";
@@ -50,41 +50,41 @@ async function bootstrapMessaging() {
 
   initConsumerManager(channel, exchange); //initializing singleton consumerManager
 
-  const topics: TopicObject[] = [
-    // {
-    //   domain: "scene",
-    //   category: "color",
-    //   action: "updated",
-    //   type: "*",
-    //   color: "*",
-    // },
-    // {
-    //   domain: "scene",
-    //   category: "shape",
-    //   action: "updated",
-    //   type: "*",
-    //   color: "*",
-    // },
-    // {
-    //   domain: "scene",
-    //   category: "shape",
-    //   action: "updated",
-    //   type: "cube",
-    //   color: "FFFF00",
-    // }, // specific example
-    {
-      domain: "scene",
-      category: "color",
-      action: "updated",
-      type: "*",
-      color: "*",
-    },
-  ];
+  // const topics: TopicObject[] = [
+  //   // {
+  //   //   domain: "scene",
+  //   //   category: "color",
+  //   //   action: "updated",
+  //   //   type: "*",
+  //   //   color: "*",
+  //   // },
+  //   // {
+  //   //   domain: "scene",
+  //   //   category: "shape",
+  //   //   action: "updated",
+  //   //   type: "*",
+  //   //   color: "*",
+  //   // },
+  //   // {
+  //   //   domain: "scene",
+  //   //   category: "shape",
+  //   //   action: "updated",
+  //   //   type: "cube",
+  //   //   color: "FFFF00",
+  //   // }, // specific example
+  //   {
+  //     domain: "scene",
+  //     category: "color",
+  //     action: "updated",
+  //     type: "*",
+  //     color: "*",
+  //   },
+  // ];
 
-  for (const topic of topics) {
-    await registerConsumer(channel, exchange, topic, (msg, topic) => {
-      const payload = msg.content.toString();
-      EventRouter.handle(topic, payload);
-    });
-  }
+  // for (const topic of topics) {
+  //   await registerConsumer(channel, exchange, topic, (msg, topic) => {
+  //     const payload = msg.content.toString();
+  //     EventRouter.handle(topic, payload);
+  //   });
+  // }
 }

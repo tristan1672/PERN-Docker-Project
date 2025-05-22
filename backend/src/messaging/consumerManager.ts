@@ -40,10 +40,9 @@ export class ConsumerManager extends EventEmitter {
   }
 
   public async ensureConsumer(topic: TopicObject, name: string) {
-    console.log("Ensuring Consumer ", name);
+    console.log("[ConsumerManager] Checking Consumer: ", name);
     const key = getConsumerKey(topic);
     if (this.consumers.has(key)) {
-      //console.log(`Device '${name}' exists..`);
       return;
     }
 
@@ -51,21 +50,25 @@ export class ConsumerManager extends EventEmitter {
       this.channel,
       this.exchange,
       topic,
+      name,
       (msg, topicObj) => {
-        console.log("Received message for:", topicObj);
+        console.log(
+          `[ConsumerManager] Received message for device '${name}':`,
+          topicObj
+        );
         const payload = JSON.parse(msg.content.toString());
 
-        const routingKey = msg.fields.routingKey;
-        console.log("[ClientManager] Lookup for:", routingKey);
-        const clients = clientManager.getClientsByTopic(routingKey);
+        console.log(`[ConsumerManager] Looking for ${name} in clientManager...`);
+        const client = clientManager.getClient(name); // Lookup by device name
+        if (client && client.sse) {
+          console.log(`[ConsumerManager] Forwarding event to ${name}`);
 
-        clients.forEach((client) => {
-          if (client.sse) {
-            client.sse.res.write(
-              `event: message\ndata: ${JSON.stringify(payload)}\n\n`
-            );
-          }
-        });
+          client.sse.res.write(
+            `event: message\ndata: ${JSON.stringify(payload)}\n\n`
+          );
+        } else {
+          console.log(`[ConsumerManager] Client ${name} not found in registration.`);
+        }
       }
     );
 
