@@ -54,3 +54,9 @@ How to Run:
 - Populate amqp.connect("amqp:<your public address>:5672"); ensure formatting, example: "amqp://192.168.6.122:5672"
 - Ensure backend connects to rabbitMQ
 - clone sveltekit-starter and run locally, ensure .env file backend_url=http://<your public address>:5000 as this current project is ran on docker
+
+
+Diagram
+
+![image](https://github.com/user-attachments/assets/5201e57c-79a1-4973-b05e-02a37828b8a1)
+
