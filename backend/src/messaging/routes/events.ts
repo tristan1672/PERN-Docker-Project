@@ -8,7 +8,7 @@ const HEARTBEAT_INTERVAL = 30000; // 30 seconds
 router.get("/events/:id", (req, res) => {
   const { id } = req.params;
   const client = clientManager.getClient(id);
-
+  console.log(`[SSE] Attempting SSE connection with id: '${id}'`);
   if (!client) {
     return res.status(404).json({ error: "Client not found" });
   }

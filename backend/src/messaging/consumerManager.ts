@@ -56,6 +56,7 @@ export class ConsumerManager extends EventEmitter {
         const payload = JSON.parse(msg.content.toString());
 
         const routingKey = msg.fields.routingKey;
+        console.log("[ClientManager] Lookup for:", routingKey);
         const clients = clientManager.getClientsByTopic(routingKey);
 
         clients.forEach((client) => {

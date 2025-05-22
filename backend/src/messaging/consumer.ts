@@ -39,8 +39,10 @@ export async function registerConsumer(
 }
 
 function buildRoutingKey(topic: TopicObject): string {
-  //return `${topic.domain}.${topic.category}.${topic.action}.${topic.type}.${topic.color}`;
-  return `${topic.domain}.${topic.category}.${topic.action}.#`;
+  // If you want optional color, fallback to `*` or empty
+  const type = topic.type || "*";
+  const color = topic.color || "*";
+  return `${topic.domain}.${topic.category}.${topic.action}.${type}.${color}`;
 }
 
 function deconstructRoutingKey(routingKey: string): TopicObject {
