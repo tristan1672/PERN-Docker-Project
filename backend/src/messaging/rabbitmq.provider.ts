@@ -5,7 +5,7 @@ export class RabbitMQProvider {
   private channel!: amqp.Channel;
 
   async init() {
-    this.connection = await amqp.connect("amqp://192.168.6.122:5672"); //update public IP
+    this.connection = await amqp.connect("amqp://192.168.6.100:5672"); //update public IP
     this.channel = await this.connection.createChannel();
     await this.channel.assertExchange("scene.events", "topic", {
       durable: false,

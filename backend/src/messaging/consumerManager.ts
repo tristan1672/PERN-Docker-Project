@@ -41,11 +41,13 @@ export class ConsumerManager extends EventEmitter {
 
   public async ensureConsumer(topic: TopicObject, name: string) {
     console.log("[ConsumerManager] Checking Consumer: ", name);
-    const key = getConsumerKey(topic);
-    if (this.consumers.has(key)) {
+
+    if (this.consumers.has(name)) {
+      console.log(
+        `[ConsumerManager] Consumer already exists for client '${name}'`
+      );
       return;
     }
-
     await registerConsumer(
       this.channel,
       this.exchange,
@@ -58,7 +60,9 @@ export class ConsumerManager extends EventEmitter {
         );
         const payload = JSON.parse(msg.content.toString());
 
-        console.log(`[ConsumerManager] Looking for ${name} in clientManager...`);
+        console.log(
+          `[ConsumerManager] Looking for ${name} in clientManager...`
+        );
         const client = clientManager.getClient(name); // Lookup by device name
         if (client && client.sse) {
           console.log(`[ConsumerManager] Forwarding event to ${name}`);
@@ -67,12 +71,14 @@ export class ConsumerManager extends EventEmitter {
             `event: message\ndata: ${JSON.stringify(payload)}\n\n`
           );
         } else {
-          console.log(`[ConsumerManager] Client ${name} not found in registration.`);
+          console.log(
+            `[ConsumerManager] Client ${name} not found in registration.`
+          );
         }
       }
     );
 
-    this.consumers.set(key, true);
+    this.consumers.set(name, true);
   }
 
   private removeConsumer(routingKey: string) {
