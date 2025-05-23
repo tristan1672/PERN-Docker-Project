@@ -21,9 +21,9 @@ export function getConsumerManager(): ConsumerManager {
   return instance;
 }
 
-function getConsumerKey(topic: TopicObject): ConsumerKey {
-  return `${topic.domain}.${topic.category}.${topic.action}.${topic.type}.${topic.color}`;
-}
+// function getConsumerKey(topic: TopicObject): ConsumerKey {
+//   return `${topic.domain}.${topic.category}.${topic.action}.${topic.type}.${topic.color}`;
+// }
 
 export class ConsumerManager extends EventEmitter {
   private consumers: Map<ConsumerKey, boolean> = new Map();

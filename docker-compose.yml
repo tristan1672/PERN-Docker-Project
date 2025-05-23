@@ -2,7 +2,7 @@ version: '3.8'
 services:
   database:
     image: postgres:15
-    container_name: csv_postgres
+    container_name: ED-database
     restart: always
     #env_file:
     #  - .env
@@ -20,7 +20,7 @@ services:
 
   backend:
     build: ./backend
-    container_name: csv_backend
+    container_name: ED-backend
     restart: always
     depends_on:
       - database
@@ -35,24 +35,6 @@ services:
       - DATABASE_URL=postgres://user:password@database:5432/csv_db
       - PORT=5000
       - HOST=0.0.0.0
-    networks:
-      - app-network
-
-  frontend:
-    build: ./frontend
-    container_name: csv_frontend
-    restart: always
-    depends_on:
-      - backend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/frontend
-      - node_modules:/frontend/node_modules
-
-    command: npm run dev
-    environment:
-      - VITE_API_URL=http://csv_backend:5000
     networks:
       - app-network
 
