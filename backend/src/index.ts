@@ -43,6 +43,7 @@ async function bootstrapMessaging() {
 
   initConsumerManager(channel, exchange); //initializing singleton consumerManager
 
+  //test topicobject insert
   // const topics: TopicObject[] = [
   //   // {
   //   //   domain: "scene",

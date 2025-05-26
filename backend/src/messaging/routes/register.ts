@@ -2,6 +2,10 @@ import express from "express";
 import { clientManager } from "../clientManager";
 import { getConsumerManager } from "../consumerManager";
 import { TopicObject } from "../../messaging/consumer";
+import {
+  constructEdgeDeviceConfig,
+  upsertDeviceConfig,
+} from "../../database/db";
 
 const router = express.Router();
 
@@ -14,6 +18,9 @@ router.post("/register", async (req, res) => {
       .status(400)
       .json({ error: "[Register] Missing required fields" });
   }
+
+  const deviceConfig = constructEdgeDeviceConfig(req.body);
+  upsertDeviceConfig(deviceConfig);
 
   // Construct topic based on eventType and values
   const topic = req.body.topic;
