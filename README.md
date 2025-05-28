@@ -24,14 +24,10 @@ Description:
 -consumer management, queue construction and client mapping to queue
 
 Database:
-PostgreSQL
+SQlite
 
 Backend:
 Express + Node
-
-Frontend:![Inter-project Communications-Simple drawio](https://github.com/user-attachments/assets/82e013b3-6a4f-486c-a3a9-ea063ae41910)
-
-React
 
 Prerequisites
 -Node.js
@@ -51,7 +47,7 @@ How to Run:
 - Since runnning on docker, check ipconfg in cmd for public address
 - Populate amqp.connect("amqp:<your public address>:5672"); ensure formatting, example: "amqp://192.168.6.122:5672"
 - Ensure backend connects to rabbitMQ
-- clone sveltekit-starter and run locally, ensure .env file backend_url=http://<your public address>:5000 as this current project is ran on docker
+- clone sveltekit-starter and run locally, ensure .env file backend_url=http://localhost:5000
 
 
 
