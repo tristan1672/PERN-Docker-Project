@@ -14,7 +14,7 @@ backend conduit server: https://github.com/tristan1672/PERN-Docker-Project/tree/
 
 rabbit mq - ran on docker
 
-event input interface: https://github.com/tristan1672/threejs_starter/tree/simple_backend_example - ran locally
+event input interface: https://github.com/tristan1672/threejs_starter/tree/ED-Input - ran locally
 
 Description:
 *Branch specific
@@ -29,7 +29,8 @@ PostgreSQL
 Backend:
 Express + Node
 
-Frontend:
+Frontend:![Inter-project Communications-Simple drawio](https://github.com/user-attachments/assets/82e013b3-6a4f-486c-a3a9-ea063ae41910)
+
 React
 
 Prerequisites
@@ -55,4 +56,5 @@ How to Run:
 
 
 **Diagram**
-![image](https://github.com/user-attachments/assets/52519737-529b-437e-a032-d8a0bda3b943)
+![Inter-project Communications-Simple drawio](https://github.com/user-attachments/assets/c3656a16-d4ad-49a1-a116-29731f1fcce3)
+
